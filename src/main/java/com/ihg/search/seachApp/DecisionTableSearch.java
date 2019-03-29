@@ -1204,15 +1204,6 @@ public class DecisionTableSearch {
 				String gdstSingleDataRow = gdstData.substring(startIndex.get(i), endIndex.get(i));
 				dataSet.add(gdstSingleDataRow);
 			}
-			
-			//System.out.println(dataSet);
-			// Parse field value from list and store
-//			for (String condition : conditions) {
-//				String fieldName = condition.substring(condition.indexOf(startDataFact) + startConditionFactLength,
-//						condition.indexOf(endDataFact));
-//				// System.out.println(fieldName);
-//				rowData.add(fieldName);
-//			}
 		}
 
 		return dataSet;
