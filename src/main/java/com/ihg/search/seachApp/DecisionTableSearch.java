@@ -905,16 +905,22 @@ public class DecisionTableSearch {
 		gdstList.add(gdst1);
 		gdstList.add(gdst2);
 
-		
 		for (String gdst : gdstList) {
-			//Returns ArrayList for each GDST XML
-			System.out.println("Column Headers: " + this.buildColumnHeaders(gdst));
-			System.out.println("Data: " + this.parseDataRows(this.gatherDataColumns(gdst)));
-			//this.parseDataRows(this.gatherDataColumns(gdst));
+			
+			this.returnColumn(4, gdst);
 		}
 	}
 	
-	//Build Column Headers for each table including default table columns + attribute columns + field columns
+	public void returnColumn(int columnNumber, String gdst) {
+		System.out.println(this.buildColumnHeaders(gdst).get(columnNumber));
+		
+		for(int i = 0; i < this.buildData(gdst).size(); i++) {
+			System.out.println("Row " + i + ": " + this.buildData(gdst).get(i).get(columnNumber));
+		}
+	}
+
+	// Build Column Headers for each table including default table columns +
+	// attribute columns + field columns
 	public ArrayList<String> buildColumnHeaders(String gdst) {
 		ArrayList<String> headers = new ArrayList<String>();
 		ArrayList<String> attributes = new ArrayList<String>();
@@ -924,29 +930,45 @@ public class DecisionTableSearch {
 		attributes = this.parseAttributeColumns(this.gatherAttributeColumns(gdst));
 		conditions = this.parseConditionColumns(this.gatherConditionColumns(gdst));
 		actions = this.parseActionColumns(this.gatherActionColumns(gdst));
-		
-		//Default Table Columns
+
+		// Default Table Columns
 		headers.add("rowNumberCol");
 		headers.add("descriptionCol");
-		
-		//Attribute Columns
+
+		// Attribute Columns
 		for (String attribute : attributes) {
 			headers.add(attribute);
 		}
-		
-		//Condition Columns
+
+		// Condition Columns
 		for (String condition : conditions) {
 			headers.add(condition);
 		}
-		
-		for(String action : actions) {
+
+		// Action Columns
+		for (String action : actions) {
 			headers.add(action);
 		}
 
 		return headers;
 	}
 
-	//Parse Attributes Section from XML
+	//Parse Data Section
+	public ArrayList<ArrayList<String>> buildData(String gdst) {
+		ArrayList<ArrayList<String>> allData = new ArrayList<ArrayList<String>>();
+
+		ArrayList<String> gatheredDataColumns = this.gatherDataColumns(gdst);
+		ArrayList<String> parsedDataColumns = this.parseDataRows(gatheredDataColumns);
+		ArrayList<ArrayList<String>> parsedDataValues = this.parseDataValues(parsedDataColumns);
+
+		for (ArrayList<String> row : parsedDataValues) {
+			allData.add(this.parseIndividualValues(row));
+		}
+
+		return allData;
+	}
+
+	// Parse Attributes Section from XML
 	public ArrayList<String> gatherAttributeColumns(String gdstString) {
 		ArrayList<String> attributes = new ArrayList<String>();
 
@@ -959,8 +981,8 @@ public class DecisionTableSearch {
 
 		return attributes;
 	}
-	
-	//Parse Each Attribute from Attributes Section
+
+	// Parse Each Attribute from Attributes Section
 	public ArrayList<String> parseAttributeColumns(ArrayList<String> singleGDSTAttributesList) {
 		// String conditionXML;
 		String startAllAttributes = "<attribute-column";
@@ -971,10 +993,9 @@ public class DecisionTableSearch {
 		ArrayList<Integer> endIndex = new ArrayList<Integer>();
 		ArrayList<String> columnHeaders = new ArrayList<String>();
 
-		int count = 0, fromIndex = 0;
+		int fromIndex = 0;
 		int endAllAttributesLength = endAllAttributes.length();
 		int startAttributeLength = startAttribute.length();
-		int endAttributeLength = endAttributeFact.length();
 
 		// For each gdst table conditions
 		for (String gdstAttribute : singleGDSTAttributesList) {
@@ -983,11 +1004,11 @@ public class DecisionTableSearch {
 
 			// Find starting index of each attribute
 			while ((fromIndex = gdstAttribute.indexOf(startAllAttributes, fromIndex)) != -1) {
-				
+
 				startIndex.add(fromIndex);
 				fromIndex++;
 			}
-			
+
 			// Find ending index of each attribute
 			while ((fromIndex = gdstAttribute.indexOf(endAllAttributes, fromIndex)) != -1) {
 
@@ -1006,7 +1027,7 @@ public class DecisionTableSearch {
 			for (String attribute : attributes) {
 				String fieldName = attribute.substring(attribute.indexOf(startAttribute) + startAttributeLength,
 						attribute.indexOf(endAttributeFact));
-				
+
 				columnHeaders.add(fieldName);
 			}
 		}
@@ -1014,7 +1035,7 @@ public class DecisionTableSearch {
 		return columnHeaders;
 	}
 
-	//Parse Conditions Section from XML
+	// Parse Conditions Section from XML
 	public ArrayList<String> gatherConditionColumns(String gdstString) {
 		ArrayList<String> conditions = new ArrayList<String>();
 
@@ -1028,11 +1049,10 @@ public class DecisionTableSearch {
 		return conditions;
 	}
 
-	//Parse Each Condition from Conditions Section
+	// Parse Each Condition from Conditions Section
 	public ArrayList<String> parseConditionColumns(ArrayList<String> singleGDSTConditionsList) {
 		// Array Contains all conditions for each Single GDST as an index value
-		
-		String conditionXML;
+
 		String startAllConditions = "<condition-column";
 		String endAllConditions = "</condition-column";
 		String startConditionFact = "<factField>";
@@ -1041,10 +1061,9 @@ public class DecisionTableSearch {
 		ArrayList<Integer> endIndex = new ArrayList<Integer>();
 		ArrayList<String> columnHeaders = new ArrayList<String>();
 
-		int count = 0, fromIndex = 0;
+		int fromIndex = 0;
 		int endConditionLength = endAllConditions.length();
 		int startConditionFactLength = startConditionFact.length();
-		int endConditionFactLength = endConditionFact.length();
 
 		// For each gdst table conditions
 		for (String gdstCondition : singleGDSTConditionsList) {
@@ -1055,7 +1074,7 @@ public class DecisionTableSearch {
 				startIndex.add(fromIndex);
 				fromIndex++;
 			}
-			
+
 			// Find ending index of each condition
 			while ((fromIndex = gdstCondition.indexOf(endAllConditions, fromIndex)) != -1) {
 				endIndex.add(fromIndex + endConditionLength);
@@ -1081,7 +1100,7 @@ public class DecisionTableSearch {
 		return columnHeaders;
 	}
 
-	//Parse Actions Section from XML
+	// Parse Actions Section from XML
 	public ArrayList<String> gatherActionColumns(String gdstString) {
 		ArrayList<String> actions = new ArrayList<String>();
 
@@ -1095,11 +1114,10 @@ public class DecisionTableSearch {
 		return actions;
 	}
 
-	//Parse Each Action from Actions Section
+	// Parse Each Action from Actions Section
 	public ArrayList<String> parseActionColumns(ArrayList<String> singleGDSTActionList) {
 		// Array Contains all actions for each Single GDST as an index value
-		
-		String actionXML;
+
 		String startAllActions = "<set-field-col";
 		String endAllActions = "</set-field-col";
 		String startActionFact = "<factField>";
@@ -1108,10 +1126,9 @@ public class DecisionTableSearch {
 		ArrayList<Integer> endIndex = new ArrayList<Integer>();
 		ArrayList<String> columnHeaders = new ArrayList<String>();
 
-		int count = 0, fromIndex = 0;
+		int fromIndex = 0;
 		int endConditionLength = endAllActions.length();
 		int startConditionFactLength = startActionFact.length();
-		int endConditionFactLength = endActionFact.length();
 
 		// For each gdst table actions
 		for (String gdstCondition : singleGDSTActionList) {
@@ -1122,7 +1139,7 @@ public class DecisionTableSearch {
 				startIndex.add(fromIndex);
 				fromIndex++;
 			}
-			
+
 			// Find ending index of each action
 			while ((fromIndex = gdstCondition.indexOf(endAllActions, fromIndex)) != -1) {
 				endIndex.add(fromIndex + endConditionLength);
@@ -1148,7 +1165,7 @@ public class DecisionTableSearch {
 		return columnHeaders;
 	}
 
-	//Parse All Data
+	// Parse All Data
 	public ArrayList<String> gatherDataColumns(String gdstString) {
 		ArrayList<String> dataSet = new ArrayList<String>();
 
@@ -1161,27 +1178,20 @@ public class DecisionTableSearch {
 
 		return dataSet;
 	}
-	
-	//Parse Each Row of Data from Data Section
+
+	// Parse Each Row of Data from Data Section
 	public ArrayList<String> parseDataRows(ArrayList<String> singleGDSTDataList) {
 		// Array Contains data for each row of each Single GDST as an index value
-		
-		String dataXML;
+
 		String startAllData = "<list>";
 		String endAllData = "</list>";
-		String startDataFact = "<value>";
-		String endDataFact = "</value>";
+		
 		ArrayList<Integer> startIndex = new ArrayList<Integer>();
 		ArrayList<Integer> endIndex = new ArrayList<Integer>();
-		ArrayList<Integer> startIndex2 = new ArrayList<Integer>();
-		ArrayList<Integer> endIndex2 = new ArrayList<Integer>();
-		ArrayList<String> rowData = new ArrayList<String>();
 		ArrayList<String> dataSet = new ArrayList<String>();
-		
+
 		int fromIndex = 0;
 		int endDataLength = endAllData.length();
-		int startDataFactLength = startDataFact.length();
-		int endDataFactLength = endDataFact.length();
 
 		// For each gdst table List
 		for (String gdstData : singleGDSTDataList) {
@@ -1191,7 +1201,7 @@ public class DecisionTableSearch {
 				startIndex.add(fromIndex);
 				fromIndex++;
 			}
-			
+
 			// Find ending index of each list
 			while ((fromIndex = gdstData.indexOf(endAllData, fromIndex)) != -1) {
 				endIndex.add(fromIndex + endDataLength);
@@ -1209,4 +1219,117 @@ public class DecisionTableSearch {
 		return dataSet;
 	}
 
+	// Parse Each Row of Data from Data Section
+	public ArrayList<ArrayList<String>> parseDataValues(ArrayList<String> rows) {
+		// Array Contains data for each row of each Single GDST as an index value
+
+		String startValueData = "<value>";
+		String endValueData = "</value>";
+
+		ArrayList<ArrayList<String>> dataSet = new ArrayList<ArrayList<String>>();
+
+		int fromIndex = 0;
+		int endDataLength = endValueData.length();
+
+		// For each gdst table List
+		for (String valueList : rows) {
+
+			ArrayList<String> rowData = new ArrayList<String>();
+			ArrayList<Integer> startIndex = new ArrayList<Integer>();
+			ArrayList<Integer> endIndex = new ArrayList<Integer>();
+
+			// Find starting index of each list
+			while ((fromIndex = valueList.indexOf(startValueData, fromIndex)) != -1) {
+				startIndex.add(fromIndex);
+				fromIndex++;
+				// System.out.println(startIndex);
+			}
+
+			// Find ending index of each list
+			while ((fromIndex = valueList.indexOf(endValueData, fromIndex)) != -1) {
+				endIndex.add(fromIndex + endDataLength);
+				fromIndex++;
+			}
+
+			// Parse each list
+			for (int i = 0; i < startIndex.size(); i++) {
+
+				String gdstSingleDataRow = valueList.substring(startIndex.get(i), endIndex.get(i));
+				rowData.add(gdstSingleDataRow);
+			}
+
+			dataSet.add(rowData);
+		}
+
+		return dataSet;
+	}
+
+	
+	public ArrayList<String> parseIndividualValues(ArrayList<String> cells) {
+
+
+		int fromIndex = 0;
+		int fromIndex2 = 0;
+
+		ArrayList<String> parsedCells = new ArrayList<String>();
+		ArrayList<String> data = new ArrayList<String>();
+
+		for (String cell : cells) {
+			StringBuilder sb = new StringBuilder(cell);
+
+			// ArrayList<String> rowData = new ArrayList<String>();
+			int startIndex = 0;
+			int endIndex = 0;
+
+			// Find starting index of each substring to delete
+			while ((fromIndex = cell.indexOf("<dataType>", fromIndex)) != -1) {
+				startIndex = fromIndex;
+				fromIndex++;
+				// System.out.println(startIndex);
+			}
+
+			// Find ending index of each substring to delete
+			while ((fromIndex = cell.indexOf("</value>", fromIndex)) != -1) {
+				endIndex = fromIndex + "</value>".length();
+				fromIndex++;
+			}
+
+			// Removes <dataType></dataType>, <isOtherwise></isOtherwise>, and </value>
+			sb.delete(startIndex, endIndex);
+			String result = sb.toString();
+			result = result.replaceAll("\n", " ");
+			result = (result).replaceAll("\\s+", " ");
+
+			parsedCells.add(result);
+		}
+
+		for (String cell : parsedCells) {
+			StringBuilder sb = new StringBuilder(cell);
+			ArrayList<Integer> startIndeces = new ArrayList<Integer>();
+			ArrayList<Integer> endIndeces = new ArrayList<Integer>();
+
+			while ((fromIndex2 = cell.indexOf("<", fromIndex2)) != -1) {
+				startIndeces.add(fromIndex2);
+				fromIndex2++;
+			}
+
+			while ((fromIndex2 = cell.indexOf(">", fromIndex2)) != -1) {
+				endIndeces.add(fromIndex2 + 1);
+				fromIndex2++;
+			}
+
+			for (int i = startIndeces.size() - 1; i >= 0; i--) {
+
+				sb.delete(startIndeces.get(i), endIndeces.get(i));
+				String result = sb.toString();
+				(result).replaceAll("\\s+", " ");
+			}
+
+			String result = sb.toString();
+			result = result.replaceAll("/[^A-Za-z0-9]/", "");
+			data.add(result);
+		}
+
+		return data;
+	}
 }
