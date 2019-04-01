@@ -905,16 +905,30 @@ public class DecisionTableSearch {
 		gdstList.add(gdst1);
 		gdstList.add(gdst2);
 
-		for (String gdst : gdstList) {
-			
-			this.returnColumn(4, gdst);
-		}
+		// Search a Guided Decision Table by Column Index and XML String Name
+		// Returns Column Header and all data for that column
+		this.returnColumn(0, gdst1);
+		this.returnColumn(1, gdst1);
+		this.returnColumn(2, gdst1);
+		this.returnColumn(3, gdst1);
+		this.returnColumn(4, gdst1);
+		this.returnColumn(5, gdst1);
+		this.returnColumn(6, gdst1);
+		this.returnColumn(7, gdst1);
+		this.returnColumn(8, gdst1);
+		this.returnColumn(9, gdst1);
+		this.returnColumn(10, gdst1);
+		this.returnColumn(11, gdst1);
+		this.returnColumn(12, gdst1);
+		this.returnColumn(13, gdst1);
+		this.returnColumn(14, gdst1);
+		this.returnColumn(15, gdst1);
 	}
-	
+
 	public void returnColumn(int columnNumber, String gdst) {
 		System.out.println(this.buildColumnHeaders(gdst).get(columnNumber));
-		
-		for(int i = 0; i < this.buildData(gdst).size(); i++) {
+
+		for (int i = 0; i < this.buildData(gdst).size(); i++) {
 			System.out.println("Row " + i + ": " + this.buildData(gdst).get(i).get(columnNumber));
 		}
 	}
@@ -953,7 +967,7 @@ public class DecisionTableSearch {
 		return headers;
 	}
 
-	//Parse Data Section
+	// Parse Data Section
 	public ArrayList<ArrayList<String>> buildData(String gdst) {
 		ArrayList<ArrayList<String>> allData = new ArrayList<ArrayList<String>>();
 
@@ -1185,7 +1199,7 @@ public class DecisionTableSearch {
 
 		String startAllData = "<list>";
 		String endAllData = "</list>";
-		
+
 		ArrayList<Integer> startIndex = new ArrayList<Integer>();
 		ArrayList<Integer> endIndex = new ArrayList<Integer>();
 		ArrayList<String> dataSet = new ArrayList<String>();
@@ -1264,9 +1278,7 @@ public class DecisionTableSearch {
 		return dataSet;
 	}
 
-	
 	public ArrayList<String> parseIndividualValues(ArrayList<String> cells) {
-
 
 		int fromIndex = 0;
 		int fromIndex2 = 0;
