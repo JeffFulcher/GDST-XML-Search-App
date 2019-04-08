@@ -899,7 +899,7 @@ public class DecisionTableSearch {
 			+ "</decision-table52>";
 
 	private static ArrayList<String> gdstList = new ArrayList<String>();
-
+	
 	@Test
 	public void search() {
 		gdstList.add(gdst1);
@@ -1047,7 +1047,6 @@ public class DecisionTableSearch {
 
 		// For each gdst table conditions
 		for (String gdstAttribute : singleGDSTAttributesList) {
-			// System.out.println("GDST Condition: "+ gdstCondition);
 			List<String> attributes = new ArrayList<String>();
 
 			// Find starting index of each attribute
@@ -1142,7 +1141,6 @@ public class DecisionTableSearch {
 			for (String condition : conditions) {
 				String fieldName = condition.substring(condition.indexOf(startConditionFact) + startConditionFactLength,
 						condition.indexOf(endConditionFact));
-				// System.out.println(fieldName);
 				columnHeaders.add(fieldName);
 			}
 		}
@@ -1193,7 +1191,6 @@ public class DecisionTableSearch {
 			for (String condition : conditions) {
 				String fieldName = condition.substring(condition.indexOf(startConditionFact) + startConditionFactLength,
 						condition.indexOf(endConditionFact));
-				// System.out.println(fieldName);
 				columnHeaders.add(fieldName);
 			}
 		}
@@ -1258,7 +1255,6 @@ public class DecisionTableSearch {
 			for (String condition : conditions) {
 				String fieldName = condition.substring(condition.indexOf(startActionFact) + startConditionFactLength,
 						condition.indexOf(endActionFact));
-				// System.out.println(fieldName);
 				columnHeaders.add(fieldName);
 			}
 		}
@@ -1346,7 +1342,6 @@ public class DecisionTableSearch {
 			while ((fromIndex = valueList.indexOf(startValueData, fromIndex)) != -1) {
 				startIndex.add(fromIndex);
 				fromIndex++;
-				// System.out.println(startIndex);
 			}
 
 			// Find ending index of each list
@@ -1407,6 +1402,7 @@ public class DecisionTableSearch {
 			parsedCells.add(result);
 		}
 
+		//Removes anything left within < >
 		for (String cell : parsedCells) {
 			StringBuilder sb = new StringBuilder(cell);
 			ArrayList<Integer> startIndeces = new ArrayList<Integer>();
@@ -1428,9 +1424,16 @@ public class DecisionTableSearch {
 				String result = sb.toString();
 				(result).replaceAll("\\s+", " ");
 			}
-
+			
+			//Replaces extra spaces
 			String result = sb.toString();
 			result = result.replaceAll("/[^A-Za-z0-9]/", "");
+
+			//Adds bracket if result is a list
+			if(result.contains(",")) {
+				result = "[" + result + "]";
+			}
+			
 			data.add(result);
 		}
 
